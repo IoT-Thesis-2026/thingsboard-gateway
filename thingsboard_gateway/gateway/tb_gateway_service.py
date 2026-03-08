@@ -243,9 +243,7 @@ class TBGatewayService:
 
         self._watchers_thread = Thread(target=self._watchers, name='Watchers', daemon=True)
         self._watchers_thread.start()
-
         self.__init_remote_configuration()
-
         if self.__connectors_not_found:
             self.connectors_configs = {}
             self.load_connectors()
@@ -429,13 +427,11 @@ class TBGatewayService:
             StatisticsService.disable_statistics()
             StatisticsService.disable_custom_statistics()
             log.debug('Statistics service disabled')
-
     def init_device_filtering(self, config):
         self.__device_filter_config = config  # noqa
         self.__device_filter = None
         if self.__device_filter_config['enable'] and self.__device_filter_config.get('filterFile'):
             self.__device_filter = DeviceFilter(config_path=self._config_dir + self.__device_filter_config['filterFile']) # noqa
-
     def init_remote_shell(self, enable):
         self.__remote_shell = None
         if enable:
@@ -656,6 +652,8 @@ class TBGatewayService:
     def _attributes_parse(self, content, *args):
         try:
             log.trace("Received data: %s, %s", content, args)
+            print("===DEBUG===")
+            print("Recieved data: %s, %s", content, args)
             if content is not None:
                 shared_attributes = content.get("shared", {})
                 client_attributes = content.get("client", {})
@@ -1869,6 +1867,8 @@ class TBGatewayService:
                     content = {'data': {args[1][0]: content['value']}, 'device': device_name}
                 elif content.get('values') is not None:
                     content = {'data': content['values'], 'device': device_name}
+                    print("===DEBUG===")
+                    print(content)
                 else:
                     log.error("Unexpected format of attribute response received: \"%s\"", content)
             try:
@@ -2185,6 +2185,8 @@ class TBGatewayService:
                 RENAMING_PARAMETER: self.__renamed_devices.get(device),
                 DISCONNECTED_PARAMETER: True
             }
+        print("===DEBUG===")
+        print(data_to_save)
         return data_to_save
 
     def __save_persistent_devices(self):
@@ -2229,22 +2231,26 @@ class TBGatewayService:
 
     @CountMessage('msgsSentToPlatform')
     def send_telemetry(self, telemetry):
+        print(f"\n=== [DEBUG] Gateway Telemetry Data: {telemetry} ===")
         return self.tb_client.client.send_telemetry(telemetry,
                                                     quality_of_service=self.quality_of_service)
 
     @CountMessage('msgsSentToPlatform')
     def gw_send_telemetry(self, device, telemetry):
+        print(f"\n=== [DEBUG] Device '{device}' Telemetry Data: {telemetry} ===")
         return self.tb_client.client.gw_send_telemetry(device,
                                                        telemetry,
                                                        quality_of_service=self.quality_of_service)
 
     @CountMessage('msgsSentToPlatform')
     def send_attributes(self, attributes):
+        print(f"\n=== [DEBUG] Gateway Attributes Data: {attributes} ===")
         return self.tb_client.client.send_attributes(attributes,
                                                      quality_of_service=self.quality_of_service)
 
     @CountMessage('msgsSentToPlatform')
     def gw_send_attributes(self, device, attributes):
+        print(f"\n=== [DEBUG] Device '{device}' Attributes Data: {attributes} ===")
         return self.tb_client.client.gw_send_attributes(device,
                                                         attributes,
                                                         quality_of_service=self.quality_of_service)
@@ -2297,6 +2303,8 @@ class TBGatewayService:
         return 8196
 
     def get_converted_data_queue(self):
+        print("===DEBUG===")
+        print(self.__converted_data_queue)
         return self.__converted_data_queue
 
     # ----------------------------

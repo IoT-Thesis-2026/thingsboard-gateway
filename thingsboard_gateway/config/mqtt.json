@@ -1,19 +1,14 @@
 {
   "broker": {
     "host": "127.0.0.1",
-    "port": 1883,
-    "clientId": "ThingsBoard_gateway",
+    "port": 1885,
     "version": 5,
-    "maxMessageNumberPerWorker": 10,
-    "maxNumberOfWorkers": 100,
-    "sendDataOnlyOnChange": false,
-    "keepAlive": 60,
-    "cleanSession": true,
-    "cleanStart": true,
-    "sessionExpiryInterval": 0,
+    "clientId": "ThingsBoard_gateway",
     "security": {
       "type": "anonymous"
-    }
+    },
+    "maxNumberOfWorkers": 100,
+    "maxMessageNumberPerWorker": 10
   },
   "mapping": [
     {
@@ -43,7 +38,7 @@
         ],
         "timeseries": [
           {
-            "type": "double",
+            "type": "string",
             "key": "temperature",
             "value": "${temp}"
           },
@@ -136,6 +131,43 @@
           "batteryLevel": 1
         }
       }
+    },
+    {
+      "topicFilter": "data/",
+      "subscriptionQos": 0,
+      "converter": {
+        "type": "json",
+        "deviceInfo": {
+          "deviceNameExpression": "Demodevice",
+          "deviceNameExpressionSource": "message",
+          "deviceProfileExpressionSource": "message",
+          "deviceProfileExpression": "default"
+        },
+        "attributes": [
+          {
+            "key": "frequency",
+            "type": "integer",
+            "value": "${frequency}"
+          },
+          {
+            "key": "power",
+            "type": "integer",
+            "value": "${power}"
+          }
+        ],
+        "timeseries": [
+          {
+            "key": "temperature",
+            "type": "integer",
+            "value": "${temperature}"
+          },
+          {
+            "key": "humidity",
+            "type": "integer",
+            "value": "${humidity}"
+          }
+        ]
+      }
     }
   ],
   "requestsMapping": {
@@ -217,5 +249,10 @@
         "valueExpression": "${params}"
       }
     ]
-  }
+  },
+  "name": "MQTT",
+  "id": "1e975c18-7156-468f-95f6-f15e9375858a",
+  "logLevel": "INFO",
+  "enableRemoteLogging": false,
+  "configVersion": "3.8.1"
 }
