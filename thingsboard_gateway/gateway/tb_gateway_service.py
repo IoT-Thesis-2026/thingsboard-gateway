@@ -1150,7 +1150,8 @@ class TBGatewayService:
             if not device_valid:
                 log.warning('Device %s forbidden', data['deviceName'])
                 return Status.FORBIDDEN_DEVICE
-
+            log.info("Incoming data from connector %s (id=%s): %s", connector_name, connector_id, data)
+            print(f"Incoming data from connector {connector_name} (id={connector_id}): {data}")
             # Duplicate detector is deprecated!
             # if isinstance(data, dict):
             #     #TODO: implement data filtering for ConvertedData type
@@ -2292,21 +2293,17 @@ class TBGatewayService:
             except Exception as e:
                 print(f"Error restarting on Unix: {e}")
                 exit(1)
-
     # GETTERS --------------------
     def get_max_payload_size_bytes(self):
         if hasattr(self.tb_client.client, 'max_payload_size'):
             return self.tb_client.get_max_payload_size()
         if hasattr(self, '_TBGatewayService__max_payload_size_in_bytes'):
             return int(self.__max_payload_size_in_bytes * 0.9)
-
         return 8196
-
     def get_converted_data_queue(self):
         print("===DEBUG===")
         print(self.__converted_data_queue)
         return self.__converted_data_queue
-
     # ----------------------------
     # Storage --------------------
     def get_storage_name(self):
