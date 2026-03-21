@@ -1,11 +1,13 @@
 {
   "broker": {
     "host": "127.0.0.1",
-    "port": 1885,
-    "version": 5,
-    "clientId": "ThingsBoard_gateway",
+    "port": 1883,
+    "version": 4,
+    "clientId": "",
     "security": {
-      "type": "anonymous"
+      "type": "basic",
+      "username": "nkthanh",
+      "password": "nkthanh@123"
     },
     "maxNumberOfWorkers": 100,
     "maxMessageNumberPerWorker": 10
