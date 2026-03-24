@@ -1,23 +1,18 @@
 {
   "broker": {
     "host": "127.0.0.1",
-    "port": 1885,
-    "clientId": "ThingsBoard_gateway",
+    "port": 1886,
     "version": 5,
-    "maxMessageNumberPerWorker": 10,
-    "maxNumberOfWorkers": 100,
-    "sendDataOnlyOnChange": false,
-    "keepAlive": 60,
-    "cleanSession": true,
-    "cleanStart": true,
-    "sessionExpiryInterval": 0,
+    "clientId": "ThingsBoard_gateway",
     "security": {
       "type": "anonymous"
-    }
+    },
+    "maxNumberOfWorkers": 100,
+    "maxMessageNumberPerWorker": 10
   },
   "mapping": [
     {
-      "topicFilter": "sensor/data",
+      "topicFilter": "  ",
       "subscriptionQos": 1,
       "converter": {
         "type": "json",
@@ -136,6 +131,43 @@
           "batteryLevel": 1
         }
       }
+    },
+    {
+      "topicFilter": "data/",
+      "subscriptionQos": 0,
+      "converter": {
+        "type": "json",
+        "deviceInfo": {
+          "deviceNameExpression": "Demo Device",
+          "deviceNameExpressionSource": "constant",
+          "deviceProfileExpressionSource": "constant",
+          "deviceProfileExpression": "default"
+        },
+        "attributes": [
+          {
+            "key": "frequency",
+            "type": "integer",
+            "value": "${frequency}"
+          },
+          {
+            "key": "power",
+            "type": "integer",
+            "value": "${power}"
+          }
+        ],
+        "timeseries": [
+          {
+            "key": "temperature",
+            "type": "integer",
+            "value": "${temperature}"
+          },
+          {
+            "key": "humidity",
+            "type": "integer",
+            "value": "${humidity}"
+          }
+        ]
+      }
     }
   ],
   "requestsMapping": {
@@ -217,5 +249,6 @@
         "valueExpression": "${params}"
       }
     ]
-  }
+  },
+  "id": "9cc080b8-4183-48ff-92e5-3d35b1c5d789"
 }

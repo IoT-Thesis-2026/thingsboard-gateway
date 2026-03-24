@@ -1108,7 +1108,35 @@ class TBGatewayService:
     def __check_connector_configuration(connector_configuration):
         return ("logLevel" in connector_configuration and len(connector_configuration) > 3) or \
             ("logLevel" not in connector_configuration and len(connector_configuration.keys()) >= 1)
-
+    # Added method to mininal data
+    @staticmethod
+    def _get_minimal_device_data(data):
+        if data is None:
+            return "None"
+        try:
+            if isinstance(data, ConvertedData):
+                device_name = data.device_name
+                filtered_telemetry = {}
+                for entry in data.telemetry:
+                    for datapoint_key, value in entry.values.items():
+                        key_name = getattr(datapoint_key, 'key', str(datapoint_key))
+                        if key_name in ('temperature', 'humidity'):
+                            filtered_telemetry[key_name] = value
+                return f"deviceName={device_name}, telemetry={filtered_telemetry}"
+            if isinstance(data, dict):
+                device_name = data.get('deviceName') or data.get('device_name')
+                filtered_telemetry = {}
+                for entry in data.get('telemetry', []):
+                    if isinstance(entry, dict):
+                        values = entry.get('values', {})
+                        for key_name in ('temperature', 'humidity'):
+                            if key_name in values:
+                                filtered_telemetry[key_name] = values[key_name]
+                return f"deviceName={device_name}, telemetry={filtered_telemetry}"
+        except Exception:
+            pass
+        return str(data)
+    # End Added
     def _run_connector(self, connector_abs_path, connector_config_json):
         subprocess.run(['python3', connector_abs_path, connector_config_json, self._config_dir],
                        check=True,
@@ -1150,8 +1178,12 @@ class TBGatewayService:
             if not device_valid:
                 log.warning('Device %s forbidden', data['deviceName'])
                 return Status.FORBIDDEN_DEVICE
-            log.info("Incoming data from connector %s (id=%s): %s", connector_name, connector_id, data)
-            print(f"Incoming data from connector {connector_name} (id={connector_id}): {data}")
+            # Added 
+            minimal_data = self._get_minimal_device_data(data)
+            log.info("Incoming data from connector %s (id=%s): %s", connector_name, connector_id, minimal_data)
+            log.debug("Full incoming data from connector %s (id=%s): %s", connector_name, connector_id, data)
+            print(f"Incoming data from connector {connector_name} (id={connector_id}): {minimal_data}")
+            # End Added
             # Duplicate detector is deprecated!
             # if isinstance(data, dict):
             #     #TODO: implement data filtering for ConvertedData type
